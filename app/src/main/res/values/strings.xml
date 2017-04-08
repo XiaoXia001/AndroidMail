@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AndroidMail</string>
+    <string name="title_activity_mail_add_contact">MailAddContact</string>
 </resources>

@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id){
 
                 if (groupPosition == 0 && childPosition == 0){
-                    Intent intent = new Intent(MainActivity.this, MailConstantsActivity.class);
+                    Intent intent = new Intent(MainActivity.this, MailContactsActivity.class);
                     startActivity(intent);
                 }else if (groupPosition == 0 && childPosition == 1){
                     Builder builder = new Builder(MainActivity.this);
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             if (!EmailFormatUtil.emailFormat(address)){
                 Toast.makeText(MainActivity.this, "邮箱格式不正确", Toast.LENGTH_SHORT).show();
             }else {
-                Uri uri = Uri.parse("content://com.mailconstantprovider");
+                Uri uri = Uri.parse("content://com.zjw.mailconstantprovider");
                 ContentValues values = new ContentValues();
 
                 values.put("mailfrom", MyApplication.info.getUsername());

@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -69,9 +70,9 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher, OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.mail_login);
         sharedPreferences = getSharedPreferences("config", Context.MODE_APPEND);
+
         emailAddress = (EditText) findViewById(R.id.email_address);
         password = (EditText) findViewById(R.id.password);
         clearAddress = (Button) findViewById(R.id.clear_address);
@@ -79,6 +80,8 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher, OnC
         emailLogin = (Button) findViewById(R.id.login_button);
         cbRemember = (CheckBox) findViewById(R.id.remember_password);
         cbAutoLogin = (CheckBox) findViewById(R.id.auto_login);
+
+        isRememberPwd();
 
         clearAddress.setOnClickListener(this);
         emailLogin.setOnClickListener(this);
@@ -88,7 +91,6 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher, OnC
 
         emailAddress.addTextChangedListener(this);
 
-        isRememberPwd();
     }
 
     @Override
@@ -103,6 +105,13 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher, OnC
                 rememberPwd();
                 break;
             case R.id.auto_login:
+                cbAutoLogin.setChecked(sharedPreferences.getBoolean("isAutoLogin", false));
+                if (cbAutoLogin.isChecked()){
+                    cbAutoLogin.setChecked(false);
+                }else {
+                    cbAutoLogin.setChecked(true);
+                    sharedPreferences.edit().putBoolean("isAutoLogin", true).commit();
+                }
                 break;
             case R.id.login_button:
                 loginEmail();
@@ -146,10 +155,8 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher, OnC
             cbRemember.setChecked(false);
         }else {
             sharedPreferences.edit().putBoolean("isRbPwd", true).commit();
-            sharedPreferences.edit().putString("emailAddress", emailAddress.
-            getText().toString().trim()).commit();
-            sharedPreferences.edit().putString("password", password.
-            getText().toString().trim()).commit();
+            sharedPreferences.edit().putString("emailAddress", emailAddress.getText().toString().trim()).commit();
+            sharedPreferences.edit().putString("password", password.getText().toString().trim()).commit();
             cbRemember.setChecked(true);
         }
     }
@@ -198,11 +205,17 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher, OnC
     public void isRememberPwd(){
         Boolean isRbPwd = sharedPreferences.getBoolean("isRbPwd", false);
         if (isRbPwd){
-            String addr = sharedPreferences.getString("address", "");
+            String addr = sharedPreferences.getString("emailAddress", "");
             String pwd = sharedPreferences.getString("password", "");
             emailAddress.setText(addr);
             password.setText(pwd);
             cbRemember.setChecked(true);
+            Boolean isAutoLogin = sharedPreferences.getBoolean("isAutoLogin", false);
+            if (isAutoLogin){
+                cbAutoLogin.setChecked(true);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
         }
     }
 }

@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.AlertDialog.Builder;
@@ -26,7 +25,7 @@ import com.zjw.androidmail.bean.MailUsers;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MailConstantsActivity extends AppCompatActivity {
+public class MailContactsActivity extends AppCompatActivity {
 
     private ListView lv;
 
@@ -34,14 +33,14 @@ public class MailConstantsActivity extends AppCompatActivity {
 
     private ProgressDialog dialog;
 
-    private Uri uri = Uri.parse("content://com.mailconstantprovider");
+    private Uri uri = Uri.parse("content://com.zjw.mailconstantprovider");
 
     private MyAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mail_constants);
+        setContentView(R.layout.mail_contacts);
 
         dialog = new ProgressDialog(this);
         dialog.setMessage("正加载");
@@ -90,7 +89,7 @@ public class MailConstantsActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            View view =  View.inflate(MailConstantsActivity.this, R.layout.mail_constants_item, null);
+            View view =  View.inflate(MailContactsActivity.this, R.layout.mail_contacts_item, null);
             TextView name = (TextView) view.findViewById(R.id.tv_name);
             TextView address = (TextView) view.findViewById(R.id.tv_address);
 
@@ -127,9 +126,9 @@ public class MailConstantsActivity extends AppCompatActivity {
     }
 
     private void updateAddress(final String name, String address){
-        Builder builder = new Builder(MailConstantsActivity.this);
+        Builder builder = new Builder(MailContactsActivity.this);
         builder.setTitle("修改邮箱地址");
-        final EditText editText = new EditText(MailConstantsActivity.this);
+        final EditText editText = new EditText(MailContactsActivity.this);
         editText.setText(address);
         builder.setView(editText);
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -141,7 +140,7 @@ public class MailConstantsActivity extends AppCompatActivity {
 
                 list = getAllConstants();
                 adapter.notifyDataSetChanged();
-                Toast.makeText(MailConstantsActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MailContactsActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("取消", null);
@@ -149,7 +148,7 @@ public class MailConstantsActivity extends AppCompatActivity {
     }
 
     private void deleteAddress(final String name, String address){
-        Builder builder = new Builder(MailConstantsActivity.this);
+        Builder builder = new Builder(MailContactsActivity.this);
         builder.setMessage("你确定要删除数据");
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
@@ -158,7 +157,7 @@ public class MailConstantsActivity extends AppCompatActivity {
 
                 list = getAllConstants();
                 adapter.notifyDataSetChanged();
-                Toast.makeText(MailConstantsActivity.this, "删除数据成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MailContactsActivity.this, "删除数据成功", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("取消", null);
