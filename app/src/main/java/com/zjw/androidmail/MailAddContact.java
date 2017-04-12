@@ -64,6 +64,7 @@ public class MailAddContact extends AppCompatActivity {
             MailUsers user=new MailUsers(c.getInt(0), c.getString(2), c.getString(3));
             users.add(user);
         }
+        c.close();
         return users;
     }
 

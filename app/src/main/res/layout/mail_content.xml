@@ -51,6 +51,13 @@
         android:layout_marginTop="5dip"
         android:textIsSelectable="true" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/xuxian" />
+
     <TextView
         android:id="@+id/tv_mailsubject"
         android:layout_width="match_parent"
@@ -71,6 +78,13 @@
         android:layout_margin="5dp"
         android:visibility="gone" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/xuxian" />
+
     <WebView
         android:id="@+id/wv_mailcontent"
         android:layout_width="match_parent"
@@ -79,6 +93,8 @@
         android:layout_margin="5dp"
         android:background="#FFE6E6"
         android:visibility="gone" />
+
+
 
     <TextView
         android:id="@+id/tv_mailcontent"

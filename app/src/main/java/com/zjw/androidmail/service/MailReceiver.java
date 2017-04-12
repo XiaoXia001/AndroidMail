@@ -1,7 +1,15 @@
 package com.zjw.androidmail.service;
 
+import android.util.Base64;
+
+import com.sun.mail.imap.protocol.BASE64MailboxDecoder;
+import com.sun.mail.util.BASE64DecoderStream;
 import com.zjw.androidmail.utils.TranCharsetUtil;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -10,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -33,7 +42,7 @@ public class MailReceiver implements Serializable{
 
     private StringBuffer mailContent = new StringBuffer();
 
-    private String dataFormat = "yyyy-MM-dd HH:mm:ss";
+    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     private String charset;
 
@@ -42,6 +51,14 @@ public class MailReceiver implements Serializable{
     private ArrayList<String> attachments = new ArrayList<String>();
 
     private ArrayList<InputStream> attachmentsInputStreams = new ArrayList<InputStream>();
+
+    private String saveAttachPath = "d:\\";
+
+    private StringBuffer bodyText = new StringBuffer();
+
+    public MailReceiver(){
+
+    }
 
     public MailReceiver(MimeMessage mimeMessage){
         this.mimeMessage = mimeMessage;
@@ -106,8 +123,9 @@ public class MailReceiver implements Serializable{
 
     public String getSendDate() throws MessagingException {
         Date sendDate = mimeMessage.getSentDate();
+        //SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyyMMddHHmmss");
         if (sendDate != null) {
-            SimpleDateFormat format = new SimpleDateFormat(dataFormat, Locale.CHINA);
+            SimpleDateFormat format = new SimpleDateFormat(dateFormat, Locale.CHINA);
             return format.format(sendDate);
         } else {
             return "未知";
@@ -122,6 +140,10 @@ public class MailReceiver implements Serializable{
         }
         mailContent.setLength(0);
         return content;
+    }
+
+    public String getBodyText(){
+        return bodyText.toString();
     }
 
     public void setMailContent(StringBuffer mailContent) {
@@ -230,6 +252,114 @@ public class MailReceiver implements Serializable{
         }
     }
 
+    public boolean isContainAttachment(Part part) throws Exception{
+        boolean attachFlag = false;
+        String contentType = part.getContentType();
+        if (part.isMimeType("multipart/*")){
+            Multipart mp = (Multipart) part.getContent();
+            for (int i = 0; i < mp.getCount(); i++){
+                BodyPart mPart = mp.getBodyPart(i);
+                String disposition = mPart.getDisposition();
+                if ((disposition != null) && ((disposition.equals(Part.ATTACHMENT))
+                || (disposition.equals(Part.INLINE)))) {
+                    attachFlag = true;
+                }else if (mPart.isMimeType("multipart/*")){
+                    attachFlag = isContainAttachment((Part) mPart);
+                }else {
+                    String conType = mPart.getContentType();
+                    if ((conType.toLowerCase().indexOf("application") != -1)
+                    || (conType.toLowerCase().indexOf("name") != -1)){
+                        attachFlag = true;
+                    }
+                }
+            }
+        }else if (part.isMimeType("message/rfc822")){
+            attachFlag = isContainAttachment((Part) part.getContent());
+        }
+        return attachFlag;
+    }
+
+    private static String base64Decoder(String s) throws Exception{
+        byte[] b = Base64.decode(s, Base64.DEFAULT);
+        return (new String(b));
+    }
+
+    public String saveAttachment(Part part) throws Exception{
+        String fileName = "";
+        if (part.isMimeType("multipart/*")){
+            Multipart mp = (Multipart) part.getContent();
+            for (int i = 0; i < mp.getCount(); i++){
+                BodyPart mPart = mp.getBodyPart(i);
+                String disposition = mPart.getDisposition();
+                if ((disposition != null) && ((disposition.equals(Part.ATTACHMENT))
+                        || (disposition.equals(Part.INLINE)))) {
+                    fileName = mPart.getFileName();
+                    String s = fileName.substring(8, fileName.indexOf("?="));
+                    fileName = base64Decoder(s);
+                    if (fileName.toLowerCase().indexOf("gb2312") != -1){
+                        fileName = MimeUtility.decodeText(fileName);
+                    }
+                    saveFile(fileName, mPart.getInputStream());
+                }else if (mPart.isMimeType("multipart/*")){
+                    saveAttachment(mPart);
+                }else {
+                    fileName = mPart.getFileName();
+                    if ((fileName != null) && (fileName.indexOf("GB2312") != -1)){
+                        fileName = MimeUtility.decodeText(fileName);
+                        saveFile(fileName, mPart.getInputStream());
+                    }
+                }
+            }
+        }else if (part.isMimeType("message/rfc822")){
+            saveAttachment((Part) part.getContent());
+        }
+        return fileName;
+    }
+
+    public void setAttachPath(String attachPath){
+        this.saveAttachPath = attachPath;
+    }
+
+    public String getAttachPath(){
+        return saveAttachPath;
+    }
+
+    private void saveFile(String fileName, InputStream in) throws Exception{
+        String osName = System.getProperty("os.name");
+        String storeDir = getAttachPath();
+        String separator = "";
+        if (osName == null){
+            osName = "";
+        }
+        if (osName.toLowerCase().indexOf("win") != -1){
+            separator = "\\";
+            if (storeDir == null || storeDir.equals("")){
+                storeDir = "c:\\tmp";
+            }
+        }else {
+            separator = "/";
+            storeDir = "/tmp";
+        }
+        File storeFile = new File(storeDir + separator + fileName);
+        BufferedOutputStream bos = null;
+        BufferedInputStream bis = null;
+        try {
+            bos = new BufferedOutputStream(new FileOutputStream(storeFile));
+            bis = new BufferedInputStream(in);
+            int c;
+            while ((c = bis.read()) != -1){
+                bos.write(c);
+                bos.flush();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new Exception("文件保存失败！");
+        }finally {
+            bos.close();
+            bis.close();
+        }
+    }
+
     private String parseCharset(String contentType){
         if (!contentType.contains("charset")){
             return null;
@@ -247,6 +377,8 @@ public class MailReceiver implements Serializable{
             }
         }
     }
+
+
 
     private String parseInputStream(InputStream is) throws IOException, MessagingException {
         StringBuffer str = new StringBuffer();

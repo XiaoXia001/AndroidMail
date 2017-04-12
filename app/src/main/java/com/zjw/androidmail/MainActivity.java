@@ -1,16 +1,22 @@
 package com.zjw.androidmail;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -29,13 +35,23 @@ public class MainActivity extends AppCompatActivity {
 
     private long mExitTime = 0;
 
+    private TextView welcome;
+
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        sharedPreferences = getSharedPreferences("config", Context.MODE_APPEND);
+
+        welcome = (TextView) findViewById(R.id.welcome);
+        welcome.setText("欢迎使用邮箱助手：" + MyApplication.info.getUsername() + "(长按注销当前账户)");
 
         final MyExpandAdapter adapter = new MyExpandAdapter();
+
+        registerForContextMenu(welcome);
 
         expandableListView = (ExpandableListView) findViewById(R.id.list);
         expandableListView.setGroupIndicator(null);
@@ -104,6 +120,28 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo){
+        getMenuInflater().inflate(R.menu.logout_menu, menu);
+        super.onCreateContextMenu(menu, view, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.logout:
+                LogOut();
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void LogOut(){
+        sharedPreferences.edit().putBoolean("isAutoLogin", false).commit();
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     private class MyExpandAdapter extends BaseExpandableListAdapter{

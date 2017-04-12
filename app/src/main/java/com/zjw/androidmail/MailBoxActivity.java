@@ -84,6 +84,20 @@ public class MailBoxActivity extends AppCompatActivity {
         setContentView(R.layout.mail_box);
         initView();
 
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                .detectDiskReads()
+                .detectDiskWrites()
+                .detectAll()
+                .penaltyLog()
+                .build());
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectLeakedSqlLiteObjects()
+                //.detectLeakedClosableObjects()
+                //.detectAll()
+                .penaltyLog()
+                .penaltyDeath()
+                .build());
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -121,18 +135,7 @@ public class MailBoxActivity extends AppCompatActivity {
         dialog.show();
 
 
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                .detectDiskReads()
-                .detectDiskWrites()
-                .detectNetwork()
-                .penaltyLog()
-                .build());
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectLeakedSqlLiteObjects()
-                .detectLeakedClosableObjects()
-                .penaltyLog()
-                .penaltyDeath()
-                .build());
+
     }
 
     private List<String> getAllMessageids(){
@@ -187,7 +190,8 @@ public class MailBoxActivity extends AppCompatActivity {
                     }
 
                     ((MyApplication)getApplication()).setAttachmentInputStream(attachmentsInputStreamsList.get(position));
-                    final Intent intent = new Intent(MailBoxActivity.this, MailContentActivity.class).putExtra("MAIL", mailList.get(position));
+                    final Intent intent = new Intent(MailBoxActivity.this, MailContentActivity.class);
+                    intent.putExtra("MAIL", mailList.get(position));
                     startActivity(intent);
                 }
             });

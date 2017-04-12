@@ -23,6 +23,19 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/welcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textColor="#1e1e1e"
+        android:textSize="15sp"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@drawable/xuxian"/>
+
     <ExpandableListView
         android:id="@+id/list"
         android:layout_width="match_parent"

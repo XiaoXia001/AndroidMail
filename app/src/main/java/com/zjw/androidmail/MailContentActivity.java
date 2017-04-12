@@ -40,7 +40,7 @@ public class MailContentActivity extends AppCompatActivity {
 
     private Mail mail;
 
-    private Handler handler;
+    private MyHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +48,12 @@ public class MailContentActivity extends AppCompatActivity {
         setContentView(R.layout.mail_content);
         mail = (Mail) getIntent().getSerializableExtra("MAIL");
         attachmentsInputStreams = ((MyApplication) getApplication()).getAttachmentInputStream();
-        init();
-    }
-
-    private void init(){
-        handler = new MyHandler(this);
+        //init();
+        handler = new MyHandler(MailContentActivity.this);
         tvAddr = (TextView) findViewById(R.id.tv_addr);
         tvMailSubject = (TextView) findViewById(R.id.tv_mailsubject);
         tvMailContent = (TextView) findViewById(R.id.tv_mailcontent);
-        if (mail.getAttachments().size() > 0){
+        /*if (mail.getAttachments().size() > 0){
             lvMailAttachment = (ListView) findViewById(R.id.lv_mailattachment);
             lvMailAttachment.setVisibility(View.VISIBLE);
             lvMailAttachment.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mail.getAttachments()));
@@ -79,7 +76,7 @@ public class MailContentActivity extends AppCompatActivity {
                 }
             });
 
-        }
+        }*/
 
         btnCancel = (Button) findViewById(R.id.btn_cancel);
         btnRelay = (Button) findViewById(R.id.btn_relay);
@@ -91,7 +88,6 @@ public class MailContentActivity extends AppCompatActivity {
             wvMailContent.setVisibility(View.VISIBLE);
             wvMailContent.loadDataWithBaseURL(null, mail.getContent(), "text/html", "utf-8", null);
             wvMailContent.getSettings().setBuiltInZoomControls(true);
-
             DisplayMetrics dm = getResources().getDisplayMetrics();
             int scale = dm.densityDpi;
             if (scale == 240) {

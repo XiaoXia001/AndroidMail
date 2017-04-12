@@ -13,6 +13,7 @@ import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -81,11 +82,13 @@ public class MailEditActivity extends AppCompatActivity implements View.OnClickL
                         finish();
                     }else {
                         Toast.makeText(getApplicationContext(), "邮件发送成功", Toast.LENGTH_SHORT).show();
-                        mailFrom.getText().clear();;
+                        /*mailFrom.getText().clear();
                         mailTo.getText().clear();
                         mailTopic.getText().clear();
                         mailContent.getText().clear();
-                        adapter = new GridViewAdapter<Attachment>(MailEditActivity.this);
+                        adapter = new GridViewAdapter<Attachment>(MailEditActivity.this);*/
+                        Intent intent = new Intent(MailEditActivity.this, MainActivity.class);
+                        startActivity(intent);
                     }
                     break;
                 case FAILED:
@@ -253,7 +256,7 @@ public class MailEditActivity extends AppCompatActivity implements View.OnClickL
             Attachment infos = (Attachment) adapter.getItem(arg2);
             Builder builder = new Builder(MailEditActivity.this);
             builder.setTitle(infos.getFileName());
-            //builder.setIcon(getResources().getColor(android.R.color.transparent));
+            builder.setIcon(getResources().getColor(android.R.color.transparent));
             builder.setMessage("是否删除当前附件");
             builder.setNegativeButton("确定",
                     new DialogInterface.OnClickListener() {
@@ -263,7 +266,7 @@ public class MailEditActivity extends AppCompatActivity implements View.OnClickL
                             int a = adapter.getList().size();
                             int count = (int) Math.ceil(a / 4.0);
                             gridView.setLayoutParams(new LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.MATCH_PARENT, (int) (94 * 1.5 * count)
+                                    LinearLayout.LayoutParams.MATCH_PARENT, (int) (104 * 1.5 * count)
                             ));
                         }
                     });
@@ -273,7 +276,7 @@ public class MailEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void back(View view){
-        if (isCaogaoxiang && !mailTo.getText().toString().trim().equals("")){
+        if (!mailTopic.getText().toString().trim().equals("") || !mailContent.getText().toString().trim().equals("")){
             Builder builder = new Builder(MailEditActivity.this);
             builder.setMessage("是否存入草稿箱");
             builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -293,6 +296,33 @@ public class MailEditActivity extends AppCompatActivity implements View.OnClickL
         }else {
             finish();
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            if(isCaogaoxiang&&mailTo.getText().toString().trim()!=null){
+                Builder builder=new Builder(MailEditActivity.this);
+                builder.setMessage("是否存入草稿箱");
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //保存至数据库
+                        saveToCaogaoxiang();
+                    }
+
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+
+                });
+                builder.show();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private void saveToCaogaoxiang(){

@@ -81,13 +81,16 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher, OnC
         cbRemember = (CheckBox) findViewById(R.id.remember_password);
         cbAutoLogin = (CheckBox) findViewById(R.id.auto_login);
 
-        isRememberPwd();
 
         clearAddress.setOnClickListener(this);
         emailLogin.setOnClickListener(this);
         cbRemember.setOnClickListener(this);
         cbAutoLogin.setOnClickListener(this);
         seePassword.setOnClickListener(this);
+
+        isRememberPwd();
+
+
 
         emailAddress.addTextChangedListener(this);
 
@@ -105,12 +108,13 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher, OnC
                 rememberPwd();
                 break;
             case R.id.auto_login:
-                cbAutoLogin.setChecked(sharedPreferences.getBoolean("isAutoLogin", false));
+                //cbAutoLogin.setChecked(sharedPreferences.getBoolean("isAutoLogin", false));
                 if (cbAutoLogin.isChecked()){
-                    cbAutoLogin.setChecked(false);
-                }else {
                     cbAutoLogin.setChecked(true);
                     sharedPreferences.edit().putBoolean("isAutoLogin", true).commit();
+                }else {
+                    cbAutoLogin.setChecked(false);
+                    sharedPreferences.edit().putBoolean("isAutoLogin", false).commit();
                 }
                 break;
             case R.id.login_button:
@@ -210,11 +214,13 @@ public class LoginActivity extends AppCompatActivity implements TextWatcher, OnC
             emailAddress.setText(addr);
             password.setText(pwd);
             cbRemember.setChecked(true);
-            Boolean isAutoLogin = sharedPreferences.getBoolean("isAutoLogin", false);
-            if (isAutoLogin){
-                cbAutoLogin.setChecked(true);
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
+            cbAutoLogin.setChecked(sharedPreferences.getBoolean("isAutoLogin", false));
+            //Boolean isAutoLogin = sharedPreferences.getBoolean("isAutoLogin", false);
+            if (cbAutoLogin.isChecked()){
+                emailLogin.performClick();
+                //cbAutoLogin.setChecked(true);
+                //Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                //LoginActivity.this.startActivity(intent);
             }
         }
     }

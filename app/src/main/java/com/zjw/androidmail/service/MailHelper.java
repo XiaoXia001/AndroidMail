@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.mail.FetchProfile;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -156,8 +157,8 @@ public class MailHelper {
             inbox.fetch(messages, profile);
             for (int i = 0; i < messages.length; i++) {
                 // 自定义的邮件对象
-                MailReceiver reciveMail = new MailReceiver((MimeMessage) messages[i]);
-                mailList.add(reciveMail);// 添加到邮件列表中
+                MailReceiver receiveMail = new MailReceiver((MimeMessage) messages[i]);
+                mailList.add(receiveMail);// 添加到邮件列表中
             }
             return mailList;
         }
