@@ -60,6 +60,7 @@ public class MailContactsActivity extends AppCompatActivity {
             MailUsers user = new MailUsers(cursor.getInt(0), cursor.getString(2), cursor.getString(3));
             users.add(user);
         }
+        cursor.close();
         return users;
     }
 

@@ -104,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("TYPE", "INBOX");
                     intent.putExtra("status", 0);
                     startActivity(intent);
-                }else if (groupPosition == 2 && childPosition == 1){
+                }
+                /*else if (groupPosition == 2 && childPosition == 1){
                     Intent intent = new Intent(MainActivity.this, MailBoxActivity.class);
                     intent.putExtra("TYPE", "INBOX");
                     intent.putExtra("status", 1);
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("TYPE", "INBOX");
                     intent.putExtra("status", 2);
                     startActivity(intent);
-                }
+                }*/
 
                 adapter.notifyDataSetChanged();
                 return false;
@@ -151,7 +152,8 @@ public class MainActivity extends AppCompatActivity {
         String[][] child_text = new String[][]{
                 {"联系人列表", "添加联系人"},
                 {"新邮件", "草稿箱"},
-                {"全部邮件", "未读邮件", "已读邮件"}
+                {"全部邮件"}
+                //{"全部邮件", "未读邮件", "已读邮件"}
         };
 
         int[][] child_icons = new int[][]{
