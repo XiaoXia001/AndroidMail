@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("config", Context.MODE_APPEND);
 
         welcome = (TextView) findViewById(R.id.welcome);
-        welcome.setText("欢迎使用邮箱助手：" + MyApplication.info.getUsername() + "(长按注销当前账户)");
+        welcome.setText("欢迎使用邮箱助手：" + MyApplication.info.getUsername() + "(长按注销)");
 
         final MyExpandAdapter adapter = new MyExpandAdapter();
 
@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+        finish();
     }
 
     private class MyExpandAdapter extends BaseExpandableListAdapter{
